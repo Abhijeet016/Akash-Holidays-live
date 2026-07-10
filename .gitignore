@@ -1,5 +1,8 @@
 # See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
 
+# Express backend (not needed, API routes are in Next.js)
+backend/
+
 # dependencies
 node_modules
 /.pnp
