@@ -3,39 +3,33 @@ import Footer from './components/Footer'
 import BookingForm from './components/BookingForm'
 import PackagesSection from './components/PackagesSection'
 import Hero from './components/Hero'
+import { connectDB } from '@/lib/db'
+import { Package as PackageModel, Team as TeamModel, Testimonial as TestimonialModel } from '@/lib/models'
 
-const API = process.env.NEXT_PUBLIC_SITE_URL || `https://${process.env.VERCEL_URL}` || 'http://localhost:3000'
-
-type Package = { _id: string; img: string; dest: string; nights: string; persons: string; price: string; desc: string }
+type PackageType = { _id: string; img: string; dest: string; nights: string; persons: string; price: string; desc: string }
 type TeamMember = { _id: string; img: string; name: string; role: string }
-type Testimonial = { _id: string; name: string; loc: string; text: string }
+type TestimonialType = { _id: string; name: string; loc: string; text: string }
 
-async function getPackages() {
+async function getData(): Promise<{ packages: PackageType[]; team: TeamMember[]; testimonials: TestimonialType[] }> {
   try {
-    const res = await fetch(`${API}/api/packages`, { cache: 'no-store' })
-    if (!res.ok) return []
-    return res.json()
-  } catch { return [] }
-}
-
-async function getTeam() {
-  try {
-    const res = await fetch(`${API}/api/team`, { cache: 'no-store' })
-    if (!res.ok) return []
-    return res.json()
-  } catch { return [] }
-}
-
-async function getTestimonials() {
-  try {
-    const res = await fetch(`${API}/api/testimonials`, { cache: 'no-store' })
-    if (!res.ok) return []
-    return res.json()
-  } catch { return [] }
+    await connectDB()
+    const [packages, team, testimonials] = await Promise.all([
+      PackageModel.find().lean(),
+      TeamModel.find().lean(),
+      TestimonialModel.find().lean(),
+    ])
+    return {
+      packages: JSON.parse(JSON.stringify(packages)),
+      team: JSON.parse(JSON.stringify(team)),
+      testimonials: JSON.parse(JSON.stringify(testimonials)),
+    }
+  } catch {
+    return { packages: [], team: [], testimonials: [] }
+  }
 }
 
 export default async function Home() {
-  const [packages, team, testimonials]: [Package[], TeamMember[], Testimonial[]] = await Promise.all([getPackages(), getTeam(), getTestimonials()])
+  const { packages, team, testimonials } = await getData()
   return (
     <>
       <Navbar />
@@ -246,7 +240,7 @@ export default async function Home() {
             <h1 className="mb-5">Meet Our Guide</h1>
           </div>
           <div className="row g-4">
-            {team.map((member, i) => (
+            {team.map((member: TeamMember, i: number) => (
               <div key={member.name} className="col-lg-3 col-md-6 wow fadeInUp" data-wow-delay={`${0.1 + i * 0.2}s`}>
                 <div className="team-item">
                   <div className="overflow-hidden">
@@ -276,7 +270,7 @@ export default async function Home() {
             <h1 className="mb-5">Our Clients Say!!!</h1>
           </div>
           <div className="owl-carousel testimonial-carousel position-relative">
-            {testimonials.map((t) => (
+            {testimonials.map((t: TestimonialType) => (
               <div key={t.name} className="testimonial-item bg-white text-center border p-4">
                 <h5 className="mb-0">{t.name}</h5>
                 <p>{t.loc}</p>

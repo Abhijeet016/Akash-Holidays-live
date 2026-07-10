@@ -1,9 +1,7 @@
 'use client'
 import { useState, useEffect } from 'react'
-import Image from 'next/image'
 import Swal from 'sweetalert2'
 
-const API = ''
 const empty = { img: '', dest: '', nights: '', persons: '', price: '', desc: '' }
 
 type Package = { _id: string; img: string; dest: string; nights: string; persons: string; price: string; desc: string }
@@ -13,6 +11,7 @@ export default function AdminPage() {
   const [loginForm, setLoginForm] = useState({ email: '', password: '' })
   const [loginError, setLoginError] = useState('')
   const [loginLoading, setLoginLoading] = useState(false)
+  const [loading, setLoading] = useState(false)
 
   const [packages, setPackages] = useState<Package[]>([])
   const [showModal, setShowModal] = useState(false)
@@ -21,7 +20,6 @@ export default function AdminPage() {
   const [status, setStatus] = useState<'idle' | 'loading' | 'error'>('idle')
   const [deleteId, setDeleteId] = useState<string | null>(null)
 
-  // Persist token in sessionStorage
   useEffect(() => {
     const t = sessionStorage.getItem('admin_token')
     if (t) setToken(t)
@@ -29,10 +27,11 @@ export default function AdminPage() {
 
   useEffect(() => {
     if (!token) return
-    fetch(`${API}/api/packages`)
+    setLoading(true)
+    fetch('/api/packages')
       .then(r => r.json())
-      .then(setPackages)
-      .catch(() => {})
+      .then(data => { setPackages(Array.isArray(data) ? data : []); setLoading(false) })
+      .catch(() => setLoading(false))
   }, [token])
 
   const handleLogin = async (e: React.FormEvent) => {
@@ -82,7 +81,7 @@ export default function AdminPage() {
     e.preventDefault()
     setStatus('loading')
     try {
-      const res = await fetch(`${API}/api/packages`, {
+      const res = await fetch('/api/packages', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
         body: JSON.stringify(form),
@@ -117,7 +116,7 @@ export default function AdminPage() {
     if (!confirm.isConfirmed) return
     setDeleteId(id)
     try {
-      await fetch(`${API}/api/packages/${id}`, {
+      await fetch(`/api/packages/${id}`, {
         method: 'DELETE',
         headers: { Authorization: `Bearer ${token}` },
       })
@@ -173,7 +172,8 @@ export default function AdminPage() {
       <div className="adm-login-wrap">
         <div className="adm-login-card">
           <div className="adm-login-logo">
-            <Image src="/img/Logos.png" alt="logo" width={36} height={36} />
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src="/img/Logos.png" alt="logo" width={36} height={36} />
             <span className="adm-login-logo-text">Akash Holidays</span>
           </div>
           <div className="adm-login-title">Admin Login</div>
@@ -340,7 +340,8 @@ export default function AdminPage() {
         {/* Topbar */}
         <div className="adm-topbar">
           <div className="adm-topbar-logo">
-            <Image src="/img/Logos.png" alt="logo" width={32} height={32} />
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src="/img/Logos.png" alt="logo" width={32} height={32} />
             <span className="adm-topbar-logo-text">Akash Holidays</span>
           </div>
           <div className="adm-topbar-right">
@@ -363,7 +364,9 @@ export default function AdminPage() {
             </button>
           </div>
 
-          {packages.length === 0 ? (
+          {loading ? (
+            <div className="adm-empty"><i className="fa fa-spinner fa-spin"></i> Loading packages...</div>
+          ) : packages.length === 0 ? (
             <div className="adm-empty">
               <i className="fa fa-suitcase"></i>
               No packages yet. Add your first one!
