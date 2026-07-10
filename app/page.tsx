@@ -6,6 +6,10 @@ import Hero from './components/Hero'
 
 const API = ''
 
+type Package = { _id: string; img: string; dest: string; nights: string; persons: string; price: string; desc: string }
+type TeamMember = { _id: string; img: string; name: string; role: string }
+type Testimonial = { _id: string; name: string; loc: string; text: string }
+
 async function getPackages() {
   try {
     const res = await fetch(`${API}/api/packages`, { cache: 'no-store' })
@@ -31,7 +35,7 @@ async function getTestimonials() {
 }
 
 export default async function Home() {
-  const [packages, team, testimonials] = await Promise.all([getPackages(), getTeam(), getTestimonials()])
+  const [packages, team, testimonials]: [Package[], TeamMember[], Testimonial[]] = await Promise.all([getPackages(), getTeam(), getTestimonials()])
   return (
     <>
       <Navbar />
