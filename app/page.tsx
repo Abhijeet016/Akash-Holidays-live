@@ -4,9 +4,7 @@ import BookingForm from './components/BookingForm'
 import PackagesSection from './components/PackagesSection'
 import Hero from './components/Hero'
 
-const API = process.env.VERCEL_URL
-  ? `https://${process.env.VERCEL_URL}`
-  : 'http://localhost:3000'
+const API = process.env.NEXT_PUBLIC_SITE_URL || `https://${process.env.VERCEL_URL}` || 'http://localhost:3000'
 
 type Package = { _id: string; img: string; dest: string; nights: string; persons: string; price: string; desc: string }
 type TeamMember = { _id: string; img: string; name: string; role: string }
