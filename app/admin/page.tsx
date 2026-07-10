@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react'
 import Image from 'next/image'
 import Swal from 'sweetalert2'
 
-const API = 'http://localhost:5001'
+const API = ''
 const empty = { img: '', dest: '', nights: '', persons: '', price: '', desc: '' }
 
 type Package = { _id: string; img: string; dest: string; nights: string; persons: string; price: string; desc: string }
@@ -40,7 +40,7 @@ export default function AdminPage() {
     setLoginLoading(true)
     setLoginError('')
     try {
-      const res = await fetch(`${API}/api/auth/login`, {
+      const res = await fetch(`/api/auth`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(loginForm),

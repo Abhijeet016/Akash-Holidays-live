@@ -13,7 +13,7 @@ export default function BookingForm() {
     e.preventDefault()
     setStatus('loading')
     try {
-      const res = await fetch('http://localhost:5001/api/bookings', {
+      const res = await fetch(`/api/bookings`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(form),

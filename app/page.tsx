@@ -4,7 +4,7 @@ import BookingForm from './components/BookingForm'
 import PackagesSection from './components/PackagesSection'
 import Hero from './components/Hero'
 
-const API = 'http://localhost:5001'
+const API = ''
 
 async function getPackages() {
   try {
