@@ -2,9 +2,9 @@
 import { useState, useEffect } from 'react'
 import Swal from 'sweetalert2'
 
-const empty = { img: '', dest: '', nights: '', persons: '', price: '', desc: '' }
+const empty = { img: '', dest: '', nights: '', persons: '', discount: '', desc: '' }
 
-type Package = { _id: string; img: string; dest: string; nights: string; persons: string; price: string; desc: string }
+type Package = { _id: string; img: string; dest: string; nights: string; persons: string; discount: string; desc: string }
 
 export default function AdminPage() {
   const [token, setToken] = useState<string | null>(null)
@@ -386,7 +386,7 @@ export default function AdminPage() {
                       <span className="adm-pkg-chip"><i className="fa fa-calendar-alt"></i> {pkg.nights}</span>
                       <span className="adm-pkg-chip"><i className="fa fa-user"></i> {pkg.persons}</span>
                     </div>
-                    <div className="adm-pkg-price">INR {pkg.price}</div>
+                    <div className="adm-pkg-price">{pkg.discount}</div>
                     <button
                       className="adm-delete-btn"
                       onClick={() => handleDelete(pkg._id)}
@@ -429,8 +429,8 @@ export default function AdminPage() {
                     <input className="pkg-form-input" placeholder="e.g. Goa" name="dest" value={form.dest} onChange={handleChange} required />
                   </div>
                   <div className="col-md-6">
-                    <label className="pkg-form-label">Price (INR)</label>
-                    <input className="pkg-form-input" placeholder="e.g. 29,999.00" name="price" value={form.price} onChange={handleChange} required />
+                    <label className="pkg-form-label">Discount</label>
+                    <input className="pkg-form-input" placeholder="e.g. 35% OFF" name="discount" value={form.discount} onChange={handleChange} required />
                   </div>
                   <div className="col-md-6">
                     <label className="pkg-form-label">Duration</label>

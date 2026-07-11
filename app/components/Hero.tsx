@@ -420,21 +420,6 @@ export default function Hero({ packages = [] }: { packages?: Package[] }) {
                   </select>
                 </div>
 
-                <div className="row g-2 mb-2">
-                  <div className="col-6">
-                    <div className="hero-input-group">
-                      <div className="hero-input-label"><i className="fa fa-calendar-alt"></i> Check In</div>
-                      <input type="date" className="hero-input" />
-                    </div>
-                  </div>
-                  <div className="col-6">
-                    <div className="hero-input-group">
-                      <div className="hero-input-label"><i className="fa fa-calendar-alt"></i> Check Out</div>
-                      <input type="date" className="hero-input" />
-                    </div>
-                  </div>
-                </div>
-
                 <div className="hero-input-group">
                   <div className="hero-input-label"><i className="fa fa-users"></i> Travelers</div>
                   <select className="hero-input">

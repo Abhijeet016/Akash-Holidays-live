@@ -8,7 +8,7 @@ import Hero from './components/Hero'
 import { connectDB } from '@/lib/db'
 import { Package as PackageModel, Team as TeamModel, Testimonial as TestimonialModel } from '@/lib/models'
 
-type PackageType = { _id: string; img: string; dest: string; nights: string; persons: string; price: string; desc: string }
+type PackageType = { _id: string; img: string; dest: string; nights: string; persons: string; discount: string; desc: string }
 type TeamMember = { _id: string; img: string; name: string; role: string }
 type TestimonialType = { _id: string; name: string; loc: string; text: string }
 
@@ -246,7 +246,7 @@ export default async function Home() {
               <div key={member.name} className="col-lg-3 col-md-6 wow fadeInUp" data-wow-delay={`${0.1 + i * 0.2}s`}>
                 <div className="team-item">
                   <div className="overflow-hidden">
-                    <img className="img-fluid" src={`/img/${member.img}`} alt={member.name} style={{ width: '100%', height: 250, objectFit: 'cover' }} />
+                    <img className="img-fluid" src={`/img/${member.img}`} alt={member.name} style={{ width: '100%', height: 250, objectFit: 'cover', objectPosition: 'top' }} />
                   </div>
                   <div className="position-relative d-flex justify-content-center" style={{ marginTop: -19 }}>
                     {['facebook-f','twitter','instagram'].map(icon => (

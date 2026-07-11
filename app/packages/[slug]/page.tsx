@@ -2,34 +2,29 @@ import { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import Navbar from '../../components/Navbar'
 import Footer from '../../components/Footer'
+import { connectDB } from '@/lib/db'
+import { Package } from '@/lib/models'
 
-const API = process.env.NEXT_PUBLIC_SITE_URL || `https://${process.env.VERCEL_URL}` || 'http://localhost:3000'
-
-type Package = {
+type PackageDoc = {
   _id: string
   img: string
   dest: string
   nights: string
   persons: string
-  price: string
+  discount: string
   desc: string
 }
 
-async function getAllPackages(): Promise<Package[]> {
+async function getAllPackages(): Promise<PackageDoc[]> {
   try {
-    const res = await fetch(`${API}/api/packages`, { next: { revalidate: 3600 } })
-    if (!res.ok) return []
-    return res.json()
+    await connectDB()
+    const packages = await Package.find().lean()
+    return JSON.parse(JSON.stringify(packages))
   } catch { return [] }
 }
 
 function toSlug(dest: string) {
   return dest.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '')
-}
-
-function formatINR(price: string) {
-  const n = parseFloat(price.replace(/,/g, ''))
-  return isNaN(n) ? price : n.toLocaleString('en-IN')
 }
 
 export async function generateStaticParams() {
@@ -44,9 +39,9 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   if (!pkg) return { title: 'Package Not Found' }
 
   const title = `${pkg.dest} Tour Package | ${pkg.nights} | Akash Holidays Lucknow`
-  const description = `Book ${pkg.dest} tour package for ${pkg.persons} starting at ₹${formatINR(pkg.price)}. ${pkg.nights} trip. ${pkg.desc} Best deals from Akash Holidays, Lucknow.`
-  const url = `https://akashholidays.com/packages/${slug}`
-  const imgUrl = pkg.img.startsWith('data:') ? 'https://akashholidays.com/img/Logos.png' : `https://akashholidays.com/img/${pkg.img}`
+  const description = `Book ${pkg.dest} tour package for ${pkg.persons}. ${pkg.discount} discount. ${pkg.nights} trip. ${pkg.desc} Best deals from Akash Holidays, Lucknow.`
+  const url = `https://akash-holidays.in/packages/${slug}`
+  const imgUrl = pkg.img.startsWith('data:') ? 'https://akash-holidays.in/img/Logos.png' : `https://akash-holidays.in/img/${pkg.img}`
 
   return {
     title,
@@ -54,20 +49,13 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
     keywords: `${pkg.dest} tour package, ${pkg.dest} trip, ${pkg.dest} holiday, ${pkg.dest} travel, tour packages from Lucknow, Akash Holidays ${pkg.dest}, cheap ${pkg.dest} tour, ${pkg.dest} ${pkg.nights}`,
     alternates: { canonical: url },
     openGraph: {
-      title,
-      description,
-      url,
+      title, description, url,
       siteName: 'Akash Holidays',
       images: [{ url: imgUrl, width: 1200, height: 630, alt: `${pkg.dest} Tour Package` }],
       type: 'website',
       locale: 'en_IN',
     },
-    twitter: {
-      card: 'summary_large_image',
-      title,
-      description,
-      images: [imgUrl],
-    },
+    twitter: { card: 'summary_large_image', title, description, images: [imgUrl] },
   }
 }
 
@@ -77,9 +65,8 @@ export default async function PackagePage({ params }: { params: Promise<{ slug: 
   const pkg = packages.find(p => toSlug(p.dest) === slug)
   if (!pkg) notFound()
 
-  const price = parseFloat(pkg.price.replace(/,/g, ''))
   const imgUrl = pkg.img.startsWith('data:') ? '/img/Logos.png' : `/img/${pkg.img}`
-  const canonicalUrl = `https://akashholidays.com/packages/${slug}`
+  const canonicalUrl = `https://akash-holidays.in/packages/${slug}`
 
   const jsonLd = {
     '@context': 'https://schema.org',
@@ -88,27 +75,21 @@ export default async function PackagePage({ params }: { params: Promise<{ slug: 
         '@type': 'TouristTrip',
         name: `${pkg.dest} Tour Package`,
         description: pkg.desc,
-        image: `https://akashholidays.com${imgUrl}`,
+        image: `https://akash-holidays.in${imgUrl}`,
         url: canonicalUrl,
         touristType: 'Leisure',
         offers: {
           '@type': 'Offer',
-          price: price,
-          priceCurrency: 'INR',
           availability: 'https://schema.org/InStock',
           url: canonicalUrl,
-          seller: {
-            '@type': 'TravelAgency',
-            name: 'Akash Holidays',
-            url: 'https://akashholidays.com',
-          },
+          seller: { '@type': 'TravelAgency', name: 'Akash Holidays', url: 'https://akash-holidays.in' },
         },
       },
       {
         '@type': 'BreadcrumbList',
         itemListElement: [
-          { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://akashholidays.com' },
-          { '@type': 'ListItem', position: 2, name: 'Packages', item: 'https://akashholidays.com/#pack' },
+          { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://akash-holidays.in' },
+          { '@type': 'ListItem', position: 2, name: 'Packages', item: 'https://akash-holidays.in/#pack' },
           { '@type': 'ListItem', position: 3, name: `${pkg.dest} Tour`, item: canonicalUrl },
         ],
       },
@@ -121,7 +102,6 @@ export default async function PackagePage({ params }: { params: Promise<{ slug: 
       <Navbar />
 
       <div style={{ paddingTop: 80 }}>
-        {/* Hero */}
         <div style={{ position: 'relative', height: 420, overflow: 'hidden' }}>
           <img src={imgUrl} alt={`${pkg.dest} Tour Package`} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
           <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to top, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0.2) 60%, transparent 100%)' }} />
@@ -139,25 +119,25 @@ export default async function PackagePage({ params }: { params: Promise<{ slug: 
               {pkg.dest} Tour Package
             </h1>
             <p style={{ fontSize: '1.1rem', marginTop: 10, color: 'rgba(255,255,255,0.85)' }}>
-              {pkg.nights} &nbsp;·&nbsp; {pkg.persons}
+              {pkg.nights} &nbsp;·&nbsp; {pkg.persons} &nbsp;·&nbsp;
+              <span style={{ background: 'linear-gradient(135deg,#ff4d4d,#c0392b)', padding: '2px 12px', borderRadius: 50, fontSize: '0.95rem', fontWeight: 800 }}>
+                🔥 {pkg.discount}
+              </span>
             </p>
           </div>
         </div>
 
-        {/* Content */}
         <div className="container py-5">
           <div className="row g-5">
-            {/* Left */}
             <div className="col-lg-8">
               <h2 style={{ fontWeight: 800, color: '#14141f', marginBottom: 16 }}>About This Package</h2>
               <p style={{ fontSize: '1.05rem', color: '#555', lineHeight: 1.8 }}>{pkg.desc}</p>
-
               <div className="row g-3 mt-2">
                 {[
                   { icon: 'calendar-alt', label: 'Duration', value: pkg.nights },
                   { icon: 'users', label: 'Group Size', value: pkg.persons },
                   { icon: 'map-marker-alt', label: 'Destination', value: pkg.dest },
-                  { icon: 'headset', label: 'Support', value: '24/7 Available' },
+                  { icon: 'tag', label: 'Discount', value: pkg.discount },
                 ].map(item => (
                   <div key={item.label} className="col-sm-6">
                     <div style={{ display: 'flex', alignItems: 'center', gap: 14, padding: '16px 20px', background: '#f8fdf0', borderRadius: 14, border: '1px solid #d4edaa' }}>
@@ -170,7 +150,6 @@ export default async function PackagePage({ params }: { params: Promise<{ slug: 
                   </div>
                 ))}
               </div>
-
               <h3 style={{ fontWeight: 800, marginTop: 40, marginBottom: 16, color: '#14141f' }}>What&apos;s Included</h3>
               <div className="row g-2">
                 {['Accommodation', 'Meals (as per itinerary)', 'Sightseeing', 'Transport', 'Travel Guide', 'GST & Taxes'].map(item => (
@@ -184,29 +163,23 @@ export default async function PackagePage({ params }: { params: Promise<{ slug: 
               </div>
             </div>
 
-            {/* Right — Booking card */}
             <div className="col-lg-4">
               <div style={{ position: 'sticky', top: 100, background: '#fff', borderRadius: 20, boxShadow: '0 8px 40px rgba(0,0,0,0.12)', padding: 32, border: '1px solid #eee' }}>
-                <div style={{ fontSize: '0.8rem', color: '#86B817', fontWeight: 700, textTransform: 'uppercase', letterSpacing: 1, marginBottom: 8 }}>Starting From</div>
-                <div style={{ fontSize: '2.2rem', fontWeight: 900, color: '#86B817', marginBottom: 4 }}>₹{formatINR(pkg.price)}</div>
-                <div style={{ fontSize: '0.85rem', color: '#888', marginBottom: 24 }}>per person · all inclusive</div>
-
+                <div style={{ fontSize: '1.4rem', fontWeight: 900, color: '#c0392b', marginBottom: 4 }}>🔥 {pkg.discount}</div>
+                <div style={{ fontSize: '0.85rem', color: '#888', marginBottom: 24 }}>Limited time offer · Contact us for pricing</div>
                 <a
                   href={`https://wa.me/919839685724?text=Hi! I'm interested in the ${pkg.dest} tour package (${pkg.nights}). Please share more details.`}
-                  target="_blank"
-                  rel="noreferrer"
+                  target="_blank" rel="noreferrer"
                   style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10, background: '#25D366', color: '#fff', fontWeight: 700, padding: '14px 24px', borderRadius: 14, textDecoration: 'none', marginBottom: 12, fontSize: '1rem' }}
                 >
                   <i className="fab fa-whatsapp" style={{ fontSize: '1.2rem' }}></i> Book on WhatsApp
                 </a>
-
                 <a
                   href="/#booking"
                   style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10, background: 'linear-gradient(135deg, #86B817, #5a8a00)', color: '#fff', fontWeight: 700, padding: '14px 24px', borderRadius: 14, textDecoration: 'none', fontSize: '1rem' }}
                 >
                   <i className="fa fa-paper-plane"></i> Enquire Now
                 </a>
-
                 <div style={{ marginTop: 24, paddingTop: 20, borderTop: '1px solid #f0f0f0' }}>
                   {[
                     { icon: 'lock', text: 'Secure Booking' },
@@ -223,7 +196,6 @@ export default async function PackagePage({ params }: { params: Promise<{ slug: 
           </div>
         </div>
       </div>
-
       <Footer />
     </>
   )

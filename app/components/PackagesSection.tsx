@@ -1,5 +1,5 @@
 'use client'
-import { useState, useEffect, useMemo } from 'react'
+import { useState, useEffect } from 'react'
 
 type Package = {
   _id: string
@@ -7,28 +7,8 @@ type Package = {
   dest: string
   nights: string
   persons: string
-  price: string
+  discount: string
   desc: string
-}
-
-const DISCOUNT_OPTIONS = [10, 15, 20, 25, 30, 35, 40]
-
-function getDiscount(id: string) {
-  // deterministic per package so it doesn't change on re-render
-  let hash = 0
-  for (let i = 0; i < id.length; i++) hash = (hash * 31 + id.charCodeAt(i)) & 0xffffffff
-  return DISCOUNT_OPTIONS[Math.abs(hash) % DISCOUNT_OPTIONS.length]
-}
-
-function calcOriginal(price: string, discountPct: number) {
-  const num = parseFloat(price.replace(/,/g, ''))
-  if (isNaN(num)) return null
-  const original = num / (1 - discountPct / 100)
-  return Math.round(original)
-}
-
-function formatINR(n: number) {
-  return n.toLocaleString('en-IN')
 }
 
 function toSlug(dest: string) {
@@ -131,22 +111,6 @@ export default function PackagesSection({ initial }: { initial: Package[] }) {
         }
         .pkg-card-desc { color: #6c757d; font-size: 0.88rem; line-height: 1.6; margin-bottom: 18px; }
         .pkg-stars { color: #FE8800; font-size: 0.8rem; margin-bottom: 16px; letter-spacing: 2px; }
-        .pkg-price-row {
-          display: flex; align-items: center; gap: 10px; margin-bottom: 16px; flex-wrap: wrap;
-        }
-        .pkg-price-final {
-          font-size: 1.3rem; font-weight: 900; color: #86B817;
-        }
-        .pkg-price-original {
-          font-size: 0.88rem; color: #aaa; text-decoration: line-through;
-          text-decoration-color: #ff4d4d;
-        }
-        .pkg-price-save {
-          background: #fff3f3; color: #c0392b;
-          font-size: 0.72rem; font-weight: 800;
-          padding: 3px 10px; border-radius: 50px;
-          border: 1px solid #ffd0d0;
-        }
 
         .pkg-book-btn {
           display: inline-flex; align-items: center; gap: 8px;
@@ -200,11 +164,7 @@ export default function PackagesSection({ initial }: { initial: Package[] }) {
           </div>
 
           <div className="row g-4 mt-2 justify-content-center">
-            {packages.map((pkg, i) => {
-              const disc = getDiscount(pkg._id || pkg.dest)
-              const original = calcOriginal(pkg.price, disc)
-              const finalPrice = parseFloat(pkg.price.replace(/,/g, ''))
-              return (
+            {packages.map((pkg, i) => (
               <div key={pkg._id || i} className="col-lg-4 col-md-6">
                 <div className="pkg-card" id={`pkg-${pkg.dest.toLowerCase().replace(/\s+/g, '-')}`}>
                   <div
@@ -218,8 +178,7 @@ export default function PackagesSection({ initial }: { initial: Package[] }) {
                       <i className="fa fa-map-marker-alt"></i>{pkg.dest}
                     </div>
                     <div className="pkg-card-price-badge">
-                      <span className="pkg-ribbon">🔥 {disc}% OFF</span>
-                      {original && <span className="pkg-original-price">₹{formatINR(original)}</span>}
+                      <span className="pkg-ribbon">🔥 {pkg.discount}</span>
                     </div>
                   </div>
                   <div className="pkg-card-body">
@@ -229,11 +188,6 @@ export default function PackagesSection({ initial }: { initial: Package[] }) {
                     </div>
                     <div className="pkg-stars">★★★★★</div>
                     <p className="pkg-card-desc">{pkg.desc}</p>
-                    <div className="pkg-price-row">
-                      <span className="pkg-price-final">₹{formatINR(finalPrice)}</span>
-                      {original && <span className="pkg-price-original">₹{formatINR(original)}</span>}
-                      {original && <span className="pkg-price-save">Save ₹{formatINR(original - finalPrice)}</span>}
-                    </div>
                     <a href={`/packages/${toSlug(pkg.dest)}`} className="pkg-book-btn" style={{ marginRight: 8 }}>
                       <i className="fa fa-info-circle"></i> View Details
                     </a>
@@ -243,8 +197,7 @@ export default function PackagesSection({ initial }: { initial: Package[] }) {
                   </div>
                 </div>
               </div>
-              )
-            })}
+            ))}
           </div>
         </div>
       </div>

@@ -3,7 +3,7 @@ import { useState } from 'react'
 import Swal from 'sweetalert2'
 
 export default function BookingForm() {
-  const [form, setForm] = useState({ name: '', email: '', phone: '', destination: '', date: '', persons: '1', message: '' })
+  const [form, setForm] = useState({ name: '', email: '', phone: '', destination: '', persons: '1', message: '' })
   const [status, setStatus] = useState<'idle' | 'loading'>('idle')
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) =>
@@ -19,7 +19,7 @@ export default function BookingForm() {
         body: JSON.stringify(form),
       })
       if (!res.ok) throw new Error()
-      setForm({ name: '', email: '', phone: '', destination: '', date: '', persons: '1', message: '' })
+      setForm({ name: '', email: '', phone: '', destination: '', persons: '1', message: '' })
       Swal.fire({ icon: 'success', title: 'Booking Received! 🎉', text: 'We will contact you within 24 hours to confirm your trip.', confirmButtonColor: '#86B817', confirmButtonText: 'Great, Thanks!' })
     } catch {
       Swal.fire({ icon: 'error', title: 'Oops!', text: 'Something went wrong. Please try again.', confirmButtonColor: '#86B817' })
@@ -100,17 +100,11 @@ export default function BookingForm() {
               <input className="bf-input" placeholder="e.g. Kashmir" name="destination" value={form.destination} onChange={handleChange} required />
             </div>
           </div>
-          <div className="bf-row">
-            <div className="bf-field">
-              <label className="bf-label"><i className="fa fa-calendar-alt"></i> Travel Date</label>
-              <input className="bf-input" type="date" name="date" value={form.date} onChange={handleChange} required />
-            </div>
-            <div className="bf-field">
-              <label className="bf-label"><i className="fa fa-users"></i> Travelers</label>
-              <select className="bf-input" name="persons" value={form.persons} onChange={handleChange}>
-                {['1','2','3','4','5','6','7','8+'].map(n => <option key={n} value={n}>{n} {n === '1' ? 'Person' : 'Persons'}</option>)}
-              </select>
-            </div>
+          <div className="bf-field">
+            <label className="bf-label"><i className="fa fa-users"></i> Travelers</label>
+            <select className="bf-input" name="persons" value={form.persons} onChange={handleChange}>
+              {['1','2','3','4','5','6','7','8+'].map(n => <option key={n} value={n}>{n} {n === '1' ? 'Person' : 'Persons'}</option>)}
+            </select>
           </div>
           <div className="bf-field">
             <label className="bf-label"><i className="fa fa-comment-alt"></i> Special Requirements</label>

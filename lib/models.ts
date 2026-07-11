@@ -1,12 +1,12 @@
 import mongoose, { Schema } from 'mongoose'
 
 export const Package = mongoose.models.Package || mongoose.model('Package', new Schema({
-  img:     { type: String, required: true },
-  dest:    { type: String, required: true },
-  nights:  { type: String, required: true },
-  persons: { type: String, required: true },
-  price:   { type: String, required: true },
-  desc:    { type: String, required: true },
+  img:      { type: String, required: true },
+  dest:     { type: String, required: true },
+  nights:   { type: String, required: true },
+  persons:  { type: String, required: true },
+  discount: { type: String, required: true },
+  desc:     { type: String, required: true },
 }, { timestamps: true }))
 
 export const Booking = mongoose.models.Booking || mongoose.model('Booking', new Schema({
