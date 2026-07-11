@@ -1,31 +1,29 @@
 'use client'
 import { useState } from 'react'
-import Swal from 'sweetalert2'
 
 export default function BookingForm() {
   const [form, setForm] = useState({ name: '', email: '', phone: '', destination: '', persons: '1', message: '' })
-  const [status, setStatus] = useState<'idle' | 'loading'>('idle')
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) =>
     setForm({ ...form, [e.target.name]: e.target.value })
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
-    setStatus('loading')
-    try {
-      const res = await fetch(`/api/bookings`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(form),
-      })
-      if (!res.ok) throw new Error()
-      setForm({ name: '', email: '', phone: '', destination: '', persons: '1', message: '' })
-      Swal.fire({ icon: 'success', title: 'Booking Received! 🎉', text: 'We will contact you within 24 hours to confirm your trip.', confirmButtonColor: '#86B817', confirmButtonText: 'Great, Thanks!' })
-    } catch {
-      Swal.fire({ icon: 'error', title: 'Oops!', text: 'Something went wrong. Please try again.', confirmButtonColor: '#86B817' })
-    } finally {
-      setStatus('idle')
-    }
+    const msg = `Hi Akash Holidays! 👋
+
+I'd like to book a trip. Here are my details:
+
+👤 *Name:* ${form.name}
+📧 *Email:* ${form.email}
+📞 *Phone:* ${form.phone}
+📍 *Destination:* ${form.destination}
+👥 *Travelers:* ${form.persons} ${form.persons === '1' ? 'Person' : 'Persons'}${form.message ? `
+💬 *Special Requirements:* ${form.message}` : ''}
+
+Please share the best available package and pricing. Thank you!`
+
+    const url = `https://wa.me/919839685724?text=${encodeURIComponent(msg)}`
+    window.open(url, '_blank')
   }
 
   return (
@@ -110,10 +108,8 @@ export default function BookingForm() {
             <label className="bf-label"><i className="fa fa-comment-alt"></i> Special Requirements</label>
             <textarea className="bf-input" rows={3} placeholder="Any special requests, dietary needs, accessibility requirements..." name="message" value={form.message} onChange={handleChange} />
           </div>
-          <button type="submit" className="bf-submit" disabled={status === 'loading'}>
-            {status === 'loading'
-              ? <><i className="fa fa-spinner fa-spin"></i> Submitting...</>
-              : <><i className="fa fa-paper-plane"></i> Book My Trip</>}
+          <button type="submit" className="bf-submit">
+            <i className="fab fa-whatsapp"></i> Send on WhatsApp
           </button>
           <div className="bf-trust">
             <span className="bf-trust-item"><i className="fa fa-lock"></i> Secure & Private</span>
