@@ -228,6 +228,7 @@ export default function Navbar() {
         @media (max-width: 991px) {
           .nav-links, .nav-phone { display: none; }
           .nav-hamburger { display: flex; }
+          .nav-admin { display: none; }
         }
         @media (max-width: 480px) {
           .nav-inner { padding: 0 20px; }

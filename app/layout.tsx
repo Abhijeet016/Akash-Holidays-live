@@ -11,6 +11,10 @@ export const metadata: Metadata = {
   keywords: 'travel agency Lucknow, tour packages Lucknow, best travel agent Lucknow, Kashmir tour package, Himachal tour, Ladakh tour, Kedarnath yatra, Char Dham yatra, Goa tour, Kerala tour, Thailand tour, Dubai tour, Maldives honeymoon, international tour packages, domestic tour packages, religious tour packages, honeymoon packages Lucknow, family tour packages, Akash Holidays, cheap tour packages Lucknow, pilgrimage tours Lucknow',
   metadataBase: new URL('https://akash-holidays.in'),
   alternates: { canonical: 'https://akash-holidays.in' },
+  icons: {
+    icon: '/img/Logos.png',
+    apple: '/img/Logos.png',
+  },
   openGraph: {
     title: 'Akash Holidays - Best Travel Agency in Lucknow | 50+ Tour Packages',
     description: '#1 travel agency in Lucknow. Kashmir, Char Dham, Goa, Kerala, Thailand, Dubai & 50+ packages at best prices. 10,000+ happy travelers.',
