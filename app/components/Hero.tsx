@@ -408,7 +408,7 @@ export default function Hero({ packages = [] }: { packages?: Package[] }) {
             <div className="col-lg-5 offset-lg-1 hero-card-panel">
               <form className="hero-search-card" onSubmit={handleSearch}>
                 <div className="hero-search-title">Plan Your Trip</div>
-                <div className="hero-search-sub">Fill in the details and we'll get back to you</div>
+                <div className="hero-search-sub">Fill in the details for best Packages.</div>
 
                 <div className="hero-input-group">
                   <div className="hero-input-label"><i className="fa fa-map-marker-alt"></i> Destination</div>
