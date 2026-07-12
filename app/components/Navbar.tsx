@@ -131,6 +131,30 @@ export default function Navbar() {
           white-space: nowrap;
         }
         .nav-cta:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(134,184,23,0.5); color: #fff; }
+        .nav-admin {
+          display: inline-flex;
+          align-items: center;
+          gap: 7px;
+          background: rgba(255,255,255,0.07);
+          border: 1.5px solid rgba(255,255,255,0.18);
+          color: rgba(255,255,255,0.8);
+          font-size: 0.82rem;
+          font-weight: 700;
+          padding: 9px 18px;
+          border-radius: 50px;
+          text-decoration: none;
+          backdrop-filter: blur(8px);
+          transition: background 0.2s, border-color 0.2s, color 0.2s, transform 0.2s;
+          white-space: nowrap;
+          letter-spacing: 0.3px;
+        }
+        .nav-admin:hover {
+          background: rgba(162,89,198,0.18);
+          border-color: #a259c6;
+          color: #c97ef5;
+          transform: translateY(-2px);
+        }
+        .nav-admin i { font-size: 0.78rem; }
 
         /* Hamburger */
         .nav-hamburger {
@@ -187,6 +211,19 @@ export default function Navbar() {
           padding: 12px !important;
           font-weight: 700 !important;
         }
+        .nav-mobile-admin {
+          margin-top: 8px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 8px;
+          border: 1.5px solid rgba(162,89,198,0.4) !important;
+          color: #c97ef5 !important;
+          border-radius: 50px !important;
+          padding: 11px !important;
+          font-weight: 700 !important;
+          background: rgba(162,89,198,0.08) !important;
+        }
 
         @media (max-width: 991px) {
           .nav-links, .nav-phone { display: none; }
@@ -220,6 +257,9 @@ export default function Navbar() {
             <a href="tel:+917905146329" className="nav-phone">
               <i className="fa fa-phone-alt"></i> +91 79051 46329
             </a>
+            <Link href="/admin" className="nav-admin">
+              <i className="fa fa-lock"></i> Admin
+            </Link>
             <a href="https://wa.me/919839685724" target="_blank" rel="noreferrer" className="nav-cta">
               <i className="fab fa-whatsapp"></i> Book Now
             </a>
@@ -241,6 +281,9 @@ export default function Navbar() {
           <a href="https://wa.me/919839685724" target="_blank" rel="noreferrer" className="nav-mobile-cta" onClick={() => setMenuOpen(false)}>
             <i className="fab fa-whatsapp"></i> Book on WhatsApp
           </a>
+          <Link href="/admin" className="nav-mobile-admin" onClick={() => setMenuOpen(false)}>
+            <i className="fa fa-lock"></i> Admin Panel
+          </Link>
         </div>
       </header>
     </>
